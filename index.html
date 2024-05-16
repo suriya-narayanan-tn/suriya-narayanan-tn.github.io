@@ -1,1 +1,106 @@
 hello world
+
+<?php
+// Database connection
+$servername = "localhost";
+$username = "your_username";
+$password = "your_password";
+$dbname = "your_database";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch user data from the database
+$userId = $_SESSION['userId']; // Assuming you have a session variable for the user ID
+$sql = "SELECT * FROM users WHERE id = $userId";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $name = $row['name'];
+    $email = $row['email'];
+    // Fetch other user data as needed
+} else {
+    echo "No user data found.";
+}
+
+// Fetch files data from the database
+$sql = "SELECT * FROM files WHERE user_id = $userId";
+$result = $conn->query($sql);
+
+// Fetch contributions data from the database
+$sql = "SELECT * FROM contributions WHERE user_id = $userId";
+$result = $conn->query($sql);
+
+// Close the database connection
+$conn->close();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<!-- HTML head section -->
+
+<body>
+    <!-- Navigation bar -->
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        Profile
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Name:</strong> <?php echo $name; ?></p>
+                        <p><strong>Email:</strong> <?php echo $email; ?></p>
+                        <!-- Display other user profile information -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        Files
+                    </div>
+                    <div class="card-body">
+                        <?php
+                        // Loop through files and display them
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<p>" . $row['file_name'] . "</p>";
+                            }
+                        } else {
+                            echo "No files found.";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        Contributions
+                    </div>
+                    <div class="card-body">
+                        <?php
+                        // Loop through contributions and display them
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<p>" . $row['contribution_name'] . "</p>";
+                            }
+                        } else {
+                            echo "No contributions found.";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
